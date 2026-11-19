@@ -15,9 +15,11 @@
   function fresh() {
     return {
       schema: SCHEMA,
-      subjects: {},          // id -> { q:{}, sessions:[], sheetsDone:{}, exams:{} }
+      subjects: {},          // id -> { q:{} je Frage, k:{} je Lernpunkt (0 / 0.5 / 1), sessions:[], sheetsDone:{}, exams:{} }
       days: {},              // 'YYYY-MM-DD' -> Anzahl beantworteter Fragen
       xp: 0,
+      badges: {},            // Abzeichen-id -> Datum
+      best: {},              // Bestwerte der Spiele
       settings: { subject: 'lf1', dailyGoal: 20, klausuren: [], installHintHidden: false, typeAnswers: true, guideSeen: false },
       examRun: null,         // laufende Probeklausur { subject, exam, start }
       updatedAt: 0,
@@ -45,9 +47,9 @@
   }
   function subject(id) {
     load();
-    if (!S.subjects[id]) S.subjects[id] = { q: {}, sessions: [], sheetsDone: {}, exams: {} };
+    if (!S.subjects[id]) S.subjects[id] = { q: {}, k: {}, sessions: [], sheetsDone: {}, exams: {} };
     const p = S.subjects[id];
-    p.q = p.q || {}; p.sessions = p.sessions || []; p.sheetsDone = p.sheetsDone || {}; p.exams = p.exams || {};
+    p.q = p.q || {}; p.k = p.k || {}; p.sessions = p.sessions || []; p.sheetsDone = p.sheetsDone || {}; p.exams = p.exams || {};
     return p;
   }
   function exportCode() {

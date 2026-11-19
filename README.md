@@ -12,12 +12,21 @@ Lern-App für die Klausurvorbereitung (Kauffrau für Versicherungen und Finanzan
 
 ## Was drin ist
 
-- **Start:** Countdown bis zur Klausur, Tagesziel, Plan bis zum Klausurtag
-- **Üben:** Schnelltraining, Fehler wiederholen, Paragraphen-Jagd, Rechentraining (immer neue Zahlen), Lernkarten, Training nach Thema
-- **Antworten tippen:** Fundstellen und Rechenergebnisse werden eingetippt und geprüft (Paragraph, Absatz und Gesetz müssen stimmen; Satz/Nr. werden geprüft, wenn angegeben). In den Einstellungen abschaltbar.
-- **Anleitung:** ⚙︎ → „Anleitung ansehen“ (8 Schritte mit Bildern)
+- **Start:** Countdown bis zur Klausur, Fortschritt (Lernpunkte gesamt und pro Thema mit Bronze/Silber/Gold), Tagesziel, Plan bis zum Klausurtag, Level, Serie, Abzeichen
+- **Üben:** Schnelltraining, Fehler wiederholen, Paragraphen-Jagd, Rechentraining, Lernkarten, Training nach Thema
+- **Selbst prüfen:** Bei Fundstellen und Rechenaufgaben aufschreiben, „Lösung zeigen“, selbst als Richtig / Halb / Falsch bewerten (abschaltbar → Auswahl)
+- **Spiele:** Memory (Paragraph ↔ Inhalt), Blitzrunde (60 Sek. richtig/falsch), Karten-Kino (Lernkarten laufen von selbst)
 - **Lernen:** Lernzettel je Thema, Übungsblätter mit Lösungen (zum Abhaken)
 - **Klausuren:** Probetest und zwei Probeklausuren mit Timer, Punkte selbst eintragen, Notenschätzung nach IHK-Schlüssel
+- **Anleitung:** ⚙︎ → „Anleitung ansehen“
+
+## Fortschritt
+
+Jede Frage gehört zu einem von 73 Lernpunkten. Richtig → Lernpunkt sitzt, Halb → halb, Falsch → eine halbe Stufe zurück. Prozent = Anteil der Lernpunkte, die sitzen (100 % mit rund 75 richtigen Antworten).
+
+## Inhalte
+
+256 Fragen und 11 Fall-Generatoren (`js/subjects/lf1-fragen.js`, `js/subjects/lf1.js`) – nur Stoff aus den Unterrichtsunterlagen (Arbeitsblätter mit Mitschriften, Lernzettel der Klasse, Lernsituation „Anita prüft nach“). Fehler in den Unterlagen stehen als Hinweis in den Lernzetteln.
 
 ## Daten
 
@@ -27,5 +36,5 @@ Alles bleibt auf dem Gerät (localStorage). Kein Konto, kein Server, kein Tracki
 
 Reines HTML/CSS/JavaScript ohne Build-Schritt, Service Worker für Offline-Betrieb, gehostet über GitHub Pages.
 
-- Neues Lernfeld: Datei `js/subjects/lfX.js` nach dem Muster von `lf1.js` anlegen, in `index.html` und `sw.js` eintragen.
+- Neues Lernfeld: `js/subjects/lfX-fragen.js` und `js/subjects/lfX.js` nach dem Muster von LF1 anlegen, in `index.html` und `sw.js` eintragen.
 - Bei jeder Änderung `CACHE_NAME` in `sw.js` hochzählen. Dann erscheint in der App der Hinweis „Neue Version da“.
