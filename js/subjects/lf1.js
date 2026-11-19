@@ -61,7 +61,7 @@ const GENS={
   const avg=pick([450,480]);const k=pick([4,5,5,6,6,7]);const start=pick([465,480]);const pause=k<=4?15:30;const end=start+k*45+pause;const weg=pick([15,20,30,45]);
   const unt=end-start;let ans,ref,why,kk;
   const refLong=minor?"§ 9 Abs. 2 Nr. 1 JArbSchG":"§ 15 Abs. 2 Nr. 2 BBiG";
-  const refShort=minor?"§ 9 Abs. 2 Nr. 3 JArbSchG":"§ 15 Abs. 2 Nr. 1 BBiG";
+  const refShort=minor?"§ 9 Abs. 2 Nr. 3 JArbSchG; Wegezeit: § 15 Abs. 2 Nr. 1 BBiG":"§ 15 Abs. 2 Nr. 1 BBiG";
   const optLong=hm(avg)+" – frei, keine Rückkehr in den Betrieb";const optFull=hm(unt+weg)+" – danach zurück in den Betrieb";
   if(k>5){ans=optLong;ref=refLong;kk="sc-langertag";why=k+" Unterrichtsstunden sind mehr als 5 → angerechnet mit der durchschnittlichen täglichen Arbeitszeit ("+hm(avg)+").";}
   else{ans=optFull;ref=refShort;kk="sc-anrechnung";why=(k===5?"Genau 5 Stunden sind nicht MEHR als 5! ":"")+"Unterricht inkl. Pausen "+hm(unt)+" + Weg zum Betrieb "+weg+" Min. = "+hm(unt+weg)+".";}
@@ -214,21 +214,34 @@ const NOTES = {
 
 /* ====================== Blätter, Probeklausuren, Lernplan ====================== */
 const SHEETS = [
- {id:"uebung1", title:"Übungsblätter Teil 1", sub:"6 Blätter · alle Themen · 7 Seiten"},
- {id:"uebung2", title:"Übungsblätter Teil 2", sub:"neue Fälle zu allen Themen · 3 Seiten"},
+ {id:"uebung1", title:"Übungsblätter Teil 1", sub:"6 Blätter · alle Themen · 7 Seiten", skip:{24:1,25:1,26:1}},
+ {id:"uebung2", title:"Übungsblätter Teil 2", sub:"neue Fälle zu allen Themen · 3 Seiten", skip:{13:"Nur b) bearbeiten – a) und c) (Arbeitsgericht) kommen laut Themenliste nicht dran."}},
  {id:"ergaenzung", title:"Ergänzungsblatt", sub:"Kündigungsschutzgruppen, Abfindung, Betriebsrat, Abmahnung"}
 ];
 const EXAMS = [
  {id:"probetest", title:"Probetest", level:"leicht", minutes:20, parts:[6,6,5,6,2]},
  {id:"klausur-a", title:"Probeklausur A", level:"mittel", minutes:60, parts:[5,8,8,8,6,6,9]},
- {id:"klausur-b", title:"Probeklausur B", level:"schwer", minutes:60, parts:[9,8,10,22,7,4], note:"Aufgabe 5 (Arbeitsgericht) kommt laut Themenliste nicht dran – lass sie aus."}
+ {id:"klausur-b", title:"Probeklausur B", level:"schwer", minutes:60, parts:[9,8,10,22,7,4], skip:{4:1}, note:"Aufgabe 5 (Arbeitsgericht) kommt laut Themenliste nicht dran – lass sie aus."}
 ];
+/* Klausurthemen laut Liste der Lehrerin (Foto vom 28.10.) → Lernpunkte */
+const THEMEN = [
+ {name:"Duales System erklären", k:["du-lernorte","du-zeiten","du-abschluss"]},
+ {name:"IHK und ihre Aufgaben", k:["du-ihk","du-abschluss","du-verkuerzung"]},
+ {name:"Aufgaben zu rechtlichen Rahmenbedingungen", k:["du-bbig","du-ao","du-gesetz"]},
+ {name:"Mit dem BBiG umgehen", sub:"Ausbildungsvertrag, Pflichten, Kündigung in der Ausbildung", k:["du-zustande","du-form","du-probezeit","du-probezweck","du-probekrank","du-verkuerzung","du-ende","du-anita","pf-"]},
+ {name:"Freistellung für die Berufsschule", k:["sc-freistellung","sc-virtuell","sc-ausfall","sc-sanktion","sc-pruefung"]},
+ {name:"Berufsschulzeit berechnen", k:["sc-anrechnung","sc-langertag","sc-zweilange","sc-rechnen"]},
+ {name:"Mit dem JArbSchG umgehen", sub:"Beispielfälle", k:["ja-"]},
+ {name:"Arbeitsvertrag", sub:"Rechte, Pflichten, Abmahnung", k:["av-","ku-abmahnung","ku-abm-noetig"]},
+ {name:"Kündigungsschutzgesetz", sub:"alle Arten von Kündigung", k:["ku-enden","ku-begriff","ku-form","ku-zugang","ku-inhalt","ku-br","ku-arten","ku-fristlos","ku-kschg-gilt","ku-gruende","ku-sozial","ku-klage","ku-abfindung","ku-schutzgruppen"]},
+ {name:"Kündigungsfristen berechnen", k:["ku-grundfrist","ku-lang","ku-probe"]}
+].map((t) => Object.assign(t, { k: Object.keys(CONCEPTS).filter((c) => t.k.some((x) => x.slice(-1) === "-" ? c.indexOf(x) === 0 : c === x)) }));
 const PLAN = ["uebung1","uebung2","ergaenzung","probetest","klausur-a","klausur-b"];
 
 window.SUBJECTS = window.SUBJECTS || {};
 window.SUBJECTS.lf1 = {
   id: "lf1", short: "LF1", name: "Arbeits- und Ausbildungsrecht",
   topics: TOPICS, concepts: CONCEPTS, topicOf, questions: Q, cards: CARDS, pairs: DATA.PAIRS, gens: GENS,
-  notes: NOTES, sheets: SHEETS, exams: EXAMS, plan: PLAN
+  notes: NOTES, sheets: SHEETS, exams: EXAMS, plan: PLAN, themen: THEMEN
 };
 })();

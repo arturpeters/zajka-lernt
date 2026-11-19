@@ -14,10 +14,11 @@ Lern-App für die Klausurvorbereitung (Kauffrau für Versicherungen und Finanzan
 
 - **Start:** Countdown bis zur Klausur, Fortschritt (Lernpunkte gesamt und pro Thema mit Bronze/Silber/Gold), Tagesziel, Plan bis zum Klausurtag, Level, Serie, Abzeichen
 - **Üben:** Schnelltraining, Fehler wiederholen, Paragraphen-Jagd, Rechentraining, Lernkarten, Training nach Thema
-- **Selbst prüfen:** Bei Fundstellen und Rechenaufgaben aufschreiben, „Lösung zeigen“, selbst als Richtig / Halb / Falsch bewerten (abschaltbar → Auswahl)
+- **Fundstellen:** immer vier Paragraphen zum Antippen
+- **Selbst prüfen:** Bei Rechenaufgaben aufschreiben, „Lösung zeigen“, selbst als Richtig / Halb / Falsch bewerten (abschaltbar → Auswahl)
 - **Spiele:** Memory (Paragraph ↔ Inhalt), Blitzrunde (60 Sek. richtig/falsch), Karten-Kino (Lernkarten laufen von selbst)
-- **Lernen:** Lernzettel je Thema, Übungsblätter mit Lösungen (zum Abhaken)
-- **Klausuren:** Probetest und zwei Probeklausuren mit Timer, Punkte selbst eintragen, Notenschätzung nach IHK-Schlüssel
+- **Lernen:** Lernzettel je Thema, Übungsblätter mit Schreibfeldern (Handytastatur, gespeichert), Paragraphen-Bausteinen und „Lösung vergleichen“ unter jeder Aufgabe
+- **Klausuren:** Themenliste der Lehrerin mit Fortschritt und „Üben“ pro Thema; Probetest und zwei Probeklausuren mit Timer und Schreibfeldern, eigene Antworten über der Lösung, Punkte selbst eintragen, Notenschätzung nach IHK-Schlüssel
 - **Anleitung:** ⚙︎ → „Anleitung ansehen“
 
 ## Fortschritt
@@ -26,11 +27,11 @@ Jede Frage gehört zu einem von 73 Lernpunkten. Richtig → Lernpunkt sitzt, Hal
 
 ## Inhalte
 
-256 Fragen und 11 Fall-Generatoren (`js/subjects/lf1-fragen.js`, `js/subjects/lf1.js`) – nur Stoff aus den Unterrichtsunterlagen (Arbeitsblätter mit Mitschriften, Lernzettel der Klasse, Lernsituation „Anita prüft nach“). Fehler in den Unterlagen stehen als Hinweis in den Lernzetteln.
+256 Fragen und 12 Fall-Generatoren (`js/subjects/lf1-fragen.js`, `js/subjects/lf1.js`) – nur Stoff aus den Unterrichtsunterlagen (Arbeitsblätter mit Mitschriften, Lernzettel der Klasse, Lernsituation „Anita prüft nach“). Fehler in den Unterlagen stehen als Hinweis in den Lernzetteln.
 
 ## Daten
 
-Alles bleibt auf dem Gerät (localStorage). Kein Konto, kein Server, kein Tracking. Sicherung über **⚙︎ → Code kopieren**; dort lässt sich auch der Code aus dem alten LF1-Trainer einlesen.
+Alles bleibt auf dem Gerät (localStorage). Kein Konto, kein Server, kein Tracking. Sicherung über **⚙︎ → Code kopieren**; dort lässt sich auch der Code aus dem alten LF1-Trainer einlesen. Texte aus den Übungsblättern liegen getrennt unter `zajka-lernt:blaetter` und sind nicht im Sicherungscode.
 
 ## Technik
 

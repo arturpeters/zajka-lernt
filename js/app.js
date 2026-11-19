@@ -181,13 +181,13 @@
   }
 
   /* ---------- Was ist neu (einmal nach jedem Update) ---------- */
-  const APP_VERSION = '3';
+  const APP_VERSION = '3.1';
   const WHATSNEW = [
-    ['Fortschritt, der steigt', '73 Lernpunkte: richtig = sitzt, ein Fehler kostet nur eine halbe Stufe. 100 % sind mit rund 75 richtigen Antworten drin.'],
-    ['Selbst prüfen', 'Bei Fundstellen und Rechenaufgaben: aufschreiben, „Lösung zeigen“, dann Richtig, Halb oder Falsch tippen.'],
-    ['Viel mehr Fragen', '256 Fragen und 11 Fall-Generatoren mit immer neuen Namen und Zahlen – nur Stoff aus dem Unterricht.'],
-    ['Spiele', 'Memory, Blitzrunde und Karten-Kino unter „Üben“.'],
-    ['Serien, Level, Abzeichen', 'Dazu Medaillen pro Thema: Bronze, Silber, Gold.']
+    ['Schreibfelder', 'In allen Übungsblättern und Probeklausuren direkt mit der Handytastatur schreiben – kein Papier nötig. Alles bleibt gespeichert.'],
+    ['Lösung vergleichen', 'Unter jeder Aufgabe: Knopf antippen, die Lösung erscheint direkt unter deiner Antwort.'],
+    ['Paragraphen antippen', 'Fundstellen-Fragen haben wieder vier Paragraphen zur Auswahl. In den Blättern gibt es Bausteine wie §, Abs., BBiG zum Antippen.'],
+    ['Klausurthemen', 'Unter „Klausuren“ steht die Themenliste deiner Lehrerin – mit Fortschritt und „Üben“ pro Thema.'],
+    ['Lernkarten', 'Neues Feld für deine eigene Erklärung, bevor du umdrehst.']
   ];
   function whatsNewCard() {
     return '<div class="card newcard"><span class="chip">Update installiert · Version ' + APP_VERSION + '</span><h2>Das ist neu</h2><ul>' +
@@ -289,7 +289,7 @@
       h += '<div class="card sheetrow"><div class="head"><div class="grow"><b>' + esc(sh.title) + '</b><div class="note">' + esc(sh.sub) + '</div></div>' + (done ? '<span class="done-badge">✓ erledigt</span>' : '') + '</div>' +
         '<div class="row2"><a class="btn small" href="blaetter/' + sh.id + '.html">Aufgaben</a><a class="btn small ghost" href="blaetter/' + sh.id + '-loesung.html">Lösungen</a></div></div>';
     });
-    h += '<p class="note">Tipp: Antworten auf Papier schreiben, Gesetzessammlung daneben. Oben auf dem Blatt kannst du es als erledigt markieren.</p></div>';
+    h += '<p class="note">Tipp: Direkt in die Felder schreiben (wird gespeichert), Gesetzessammlung daneben. Unter jeder Aufgabe „Lösung vergleichen“. Oben auf dem Blatt kannst du es als erledigt markieren.</p></div>';
     app.innerHTML = h;
   }
   function renderZettel(topicId) {
@@ -318,6 +318,10 @@
       if (e && !run.end) h += '<a class="card install" href="blaetter/' + e.id + '.html"><b>' + esc(e.title) + ' läuft</b>Tippen, um weiterzuschreiben – die Zeit läuft weiter.</a>';
       else if (e) h += '<a class="card install" href="blaetter/' + e.id + '-loesung.html?score=1"><b>' + esc(e.title) + ' abgegeben</b>Jetzt mit der Lösung vergleichen und Punkte eintragen.</a>';
     }
+    if (s.themen && s.themen.length) {
+      h += '<div class="label">Themen der Klausur</div><div class="card themen"><p class="note">Liste deiner Lehrerin (Arbeitsgericht ist gestrichen). Antippen zum Üben.</p>' +
+        s.themen.map((t, i) => { const p = themaPct(t), m = medal(p); return '<button class="thema" data-act="thema" data-i="' + i + '"><span class="tname"><b>' + esc(t.name) + '</b>' + (t.sub ? '<span class="note">' + esc(t.sub) + '</span>' : '') + '</span><span class="bar"><i data-w="' + p + '"></i></span><span class="tp">' + p + '%</span><span class="medal ' + (m || 'none') + '">●</span></button>'; }).join('') + '</div>';
+    }
     h += '<div class="label">Probeklausuren</div>';
     s.exams.forEach((e) => {
       const res = p.exams[e.id] || [];
@@ -325,11 +329,12 @@
       if (res.length) h += '<div class="results">' + res.slice(0, 3).map((r) => '<span>' + nice(r.date) + ': ' + String(r.points).replace('.', ',') + ' / ' + r.max + ' P. (' + r.pct + ' %) · Note ≈ ' + r.grade + (r.minutes ? ' · ' + r.minutes + ' Min.' : '') + '</span>').join('') + '</div>';
       h += '<div class="row2"><a class="btn small" href="blaetter/' + e.id + '.html?run=1">' + (res.length ? 'Nochmal mit Timer' : 'Mit Timer starten') + '</a><a class="btn small ghost" href="blaetter/' + e.id + '-loesung.html">Lösung</a></div></div>';
     });
-    h += '<p class="note">Ablauf: Starten → auf Papier schreiben → „Abgeben“ → mit der Lösung vergleichen → Punkte eintragen. Die Note ist eine Schätzung nach IHK-Schlüssel.</p>';
+    h += '<p class="note">Ablauf: Starten → in die Felder schreiben → „Abgeben“ → deine Antworten stehen über der Lösung → Punkte eintragen. Die Note ist eine Schätzung nach IHK-Schlüssel.</p>';
     h += '<div class="label">Klausurtermine</div><div class="card">' + klausurList() + '<button class="btn small ghost" data-act="settings">Termin eintragen</button></div>';
     h += '</div>';
-    app.innerHTML = h;
+    app.innerHTML = h; applyBars();
   }
+  function themaPct(t) { if (!t.k.length) return 0; let sum = 0; t.k.forEach((k) => { sum += cState(k); }); return Math.round(sum / t.k.length * 100); }
   function klausurList() {
     const ks = (st.settings.klausuren || []).slice().sort((a, b) => a.date.localeCompare(b.date));
     if (!ks.length) return '<p class="note">Noch kein Termin eingetragen.</p>';
@@ -344,6 +349,10 @@
     else if (mode === 'topic') {
       const t = s.topics.find((x) => x.id === topic); title = t ? t.short : 'Thema';
       ids = sample(s.questions.filter((q) => q.t === topic).map((q) => q.id).concat(genIds(topic)), 10);
+    }
+    else if (mode === 'thema') {
+      const t = s.themen[topic]; if (!t) return; title = t.name;
+      ids = sample(s.questions.filter((q) => t.k.includes(q.k)).map((q) => q.id).concat(Object.keys(s.gens).filter((g) => t.k.includes(s.gens[g].k)).map((g) => 'g:' + g)), 10);
     }
     else if (mode === 'weak') { title = 'Fehler wiederholen'; ids = shuffle(weakIds()).slice(0, 10); if (!ids.length) { toast('Super – gerade keine offenen Fehler!'); return; } }
     else if (mode === 'para') { title = 'Paragraphen-Jagd'; ids = sample(s.questions.filter((q) => q.type === 'para').map((q) => q.id), 10); }
@@ -362,8 +371,7 @@
   }
   function selfMode(q) {
     if (st.settings.typeAnswers === false) return false;
-    if (q.calc && q.inp) return true;
-    return q.type === 'para' && String(q.o[q.a]).trim().indexOf('§') === 0;
+    return !!(q.calc && q.inp);
   }
   function qMeta(q) {
     const t = sub().topics.find((x) => x.id === q.t);
@@ -384,7 +392,8 @@
     h += '<div class="card qcard"><div class="meta">' + qMeta(q) + '</div><h3>' + esc(q.q) + '</h3>';
     if (q.type === 'match') h += '<p class="sub">Tippe links, dann das passende Feld rechts.</p>';
     if (q.type === 'order') h += '<p class="sub">Tippe die Teile in der richtigen Reihenfolge an.</p>';
-    if (selfMode(q)) h += '<p class="sub">' + (q.calc ? 'Rechne und schreib dein Ergebnis auf.' : 'Schreib die Fundstelle auf: Paragraph, Absatz, Gesetz.') + ' Dann Lösung zeigen und selbst bewerten.</p>';
+    if (selfMode(q)) h += '<p class="sub">Rechne und schreib dein Ergebnis auf. Dann Lösung zeigen und selbst bewerten.</p>';
+    else if (q.type === 'para') h += '<p class="sub">Tippe die richtige Fundstelle an.</p>';
     h += '</div><div id="ans"></div><div id="fb"></div><div class="spacer"></div><div id="next" class="sticky"></div></div>';
     app.innerHTML = h; applyBars();
     const A = document.getElementById('ans');
@@ -486,11 +495,14 @@
     const s = sub(), c = s.cards[cardOrder[cardIdx]];
     app.innerHTML = top('Lernkarten') + '<div class="screen"><div class="qhead"><div class="prog"><i data-w="' + (cardIdx / cardOrder.length * 100) + '"></i></div><span class="cnt">' + (cardIdx + 1) + ' / ' + cardOrder.length + '</span></div>' +
       '<div class="flip qcard" id="flip" data-act="flip" role="button" tabindex="0" aria-label="Karte umdrehen"><div class="inner"><div class="face"><span class="chip">' + esc(s.topics.find((t) => t.id === c.t).short) + '</span><h3>' + esc(c.f) + '</h3><p class="hint">Erst selbst erklären – dann umdrehen</p></div><div class="face back"><span class="chip">Lösung</span><p>' + esc(c.b) + '</p></div></div></div>' +
+      '<label class="cardlbl" for="cardin">Deine Erklärung (optional)</label><textarea id="cardin" class="tin cardin" rows="3" placeholder="Schreib auf, was du weißt …" autocapitalize="sentences"></textarea>' +
       '<div class="spacer"></div><div id="cardbtns"><button class="btn" data-act="flip">Umdrehen</button></div></div>';
     applyBars();
   }
   function cardFlipped() {
     const f = document.getElementById('flip'); if (!f) return; f.classList.add('on');
+    const ci = document.getElementById('cardin');
+    if (ci) { if (ci.value.trim()) { ci.readOnly = true; ci.classList.add('done'); const l = document.querySelector('.cardlbl'); if (l) l.textContent = 'Deine Erklärung – vergleiche mit der Karte'; } else { ci.remove(); const l = document.querySelector('.cardlbl'); if (l) l.remove(); } }
     const b = document.getElementById('cardbtns');
     if (b && !b.querySelector('.grade3')) b.innerHTML = '<div class="grade3"><button class="g-ok" data-act="card" data-g="1">Wusste ich</button><button class="g-half" data-act="card" data-g="0.5">Halb</button><button class="g-no" data-act="card" data-g="0">Nochmal</button></div>';
   }
@@ -607,10 +619,10 @@
     ['2-termin', 'Klausurtermin eintragen', 'Oben rechts ⚙︎ → Datum wählen → speichern. Die App zählt runter und plant die Tage bis dahin.'],
     ['3-start', 'Jeden Tag: Start', 'Fortschritt in Prozent, Tagesziel und was heute dran ist – einfach antippen.'],
     ['4-ueben', 'Üben und Spiele', 'Schnelltraining, Fehler, Paragraphen, Rechnen, Lernkarten – dazu Memory, Blitzrunde und Karten-Kino.'],
-    ['5-tippen', 'Selbst prüfen', 'Fundstelle oder Ergebnis aufschreiben, „Lösung zeigen“, dann ehrlich Richtig, Halb oder Falsch tippen.'],
-    ['6-lernkarten', 'Lernkarten', 'Erst selbst erklären, dann umdrehen und bewerten.'],
-    ['7-lernen', 'Lernzettel und Blätter', 'Unter „Lernen“: Lernzettel zu jedem Thema und die Übungsblätter mit Lösungen.'],
-    ['8-klausur', 'Probeklausur mit Timer', 'Starten, auf Papier schreiben, „Abgeben“. Dann mit der Lösung vergleichen und Punkte eintragen.']
+    ['5-tippen', 'Selbst prüfen', 'Bei Rechenaufgaben: Ergebnis aufschreiben, „Lösung zeigen“, dann ehrlich Richtig, Halb oder Falsch tippen. Fundstellen tippst du einfach an.'],
+    ['6-lernkarten', 'Lernkarten', 'Erst selbst erklären (gern ins Feld schreiben), dann umdrehen und bewerten.'],
+    ['7-lernen', 'Lernzettel und Blätter', 'Unter „Lernen“: Lernzettel zu jedem Thema und die Übungsblätter. In den Blättern schreibst du direkt in die Felder und tippst „Lösung vergleichen“.'],
+    ['8-klausur', 'Probeklausur mit Timer', 'Starten, in die Felder schreiben, „Abgeben“. Deine Antworten stehen dann über der Lösung – vergleichen und Punkte eintragen. Unter „Klausuren“ steht auch die Themenliste.']
   ];
   function renderGuide() {
     view = 'guide'; setFocus(false); setTab('');
@@ -632,9 +644,9 @@
     h += '<div class="card"><h2>Klausurtermine</h2><p class="note">Die App zählt die Tage runter und verteilt Blätter und Probeklausuren auf die Tage davor.</p>' + klausurList() +
       '<div class="field"><label for="ktitle">Bezeichnung</label><input id="ktitle" type="text" value="' + esc(s.short) + '-Klausur" autocomplete="off"></div>' +
       '<div class="field"><label for="kdate">Datum</label><input id="kdate" type="date" min="' + Z.today() + '"></div><button class="btn small" data-act="addk">Termin speichern</button></div>';
-    h += '<div class="card"><h2>Fundstellen & Rechnen</h2><p class="note">Selbst prüfen: aufschreiben, Lösung zeigen, selbst bewerten. Auswahl: Antwort aus vier Möglichkeiten antippen.</p><div class="seg two"><button data-act="typeon" data-v="1" class="' + (ty ? 'on' : '') + '">Selbst prüfen</button><button data-act="typeon" data-v="0" class="' + (ty ? '' : 'on') + '">Auswahl</button></div></div>';
+    h += '<div class="card"><h2>Rechenaufgaben</h2><p class="note">Selbst prüfen: Ergebnis aufschreiben, Lösung zeigen, selbst bewerten. Auswahl: Ergebnis aus vier Möglichkeiten antippen. Fundstellen-Fragen sind immer zum Antippen.</p><div class="seg two"><button data-act="typeon" data-v="1" class="' + (ty ? 'on' : '') + '">Selbst prüfen</button><button data-act="typeon" data-v="0" class="' + (ty ? '' : 'on') + '">Auswahl</button></div></div>';
     h += '<div class="card"><h2>Tagesziel</h2><p class="note">Fragen pro Tag</p><div class="seg">' + [10, 20, 30, 50].map((v) => '<button data-act="goal" data-v="' + v + '" class="' + (v === g ? 'on' : '') + '">' + v + '</button>').join('') + '</div></div>';
-    h += '<div class="card"><h2>Sicherung</h2><p class="note">Alles bleibt nur auf diesem iPhone. Mit dem Code kannst du den Stand sichern (z. B. in Notizen) oder auf ein anderes Gerät bringen. Auch der Code aus dem alten LF1-Trainer funktioniert.</p>' +
+    h += '<div class="card"><h2>Sicherung</h2><p class="note">Alles bleibt nur auf diesem iPhone. Mit dem Code kannst du den Stand sichern (z. B. in Notizen) oder auf ein anderes Gerät bringen. Auch der Code aus dem alten LF1-Trainer funktioniert. Deine Texte in den Übungsblättern sind nicht im Code, sie bleiben nur auf dem Handy.</p>' +
       '<div class="row2"><button class="btn small ghost" data-act="copy">Code kopieren</button><button class="btn small ghost" data-act="import">Code einlesen</button></div><textarea id="imp" placeholder="Sicherungscode hier einfügen …" aria-label="Sicherungscode"></textarea></div>';
     h += '<a class="btn ghost" href="#anleitung">Anleitung ansehen</a>';
     h += '<div class="card"><h2>Als App installieren</h2><p class="note">Safari → Teilen (□↑) → „Zum Home-Bildschirm“. Danach funktioniert die App auch offline. Updates erscheinen oben als Hinweis.</p></div>';
@@ -691,6 +703,7 @@
     else if (a === 'hideinstall') { st.settings.installHintHidden = true; Z.save(); renderStart(); }
     else if (a === 'quick' || a === 'weak' || a === 'para' || a === 'calc') startSession(a);
     else if (a === 'topic') startSession('topic', b.dataset.t);
+    else if (a === 'thema') startSession('thema', +b.dataset.i);
     else if (a === 'cards') startCards();
     else if (a === 'again') startSession(sess.mode, sess.topic);
     else if (a === 'next') { sess.i++; nextQuestion(); }

@@ -143,3 +143,42 @@ h3.lh,.bhead{break-after:avoid}
   .znote{background:#3a2f22;border-color:#6a5530}
 }
 @media print{.zbar,.ztimer,.zscore,.znote{display:none}}
+
+/* Schreibfelder (sheet.js) */
+.zta{display:block;width:100%;box-sizing:border-box;font:16px/1.45 -apple-system,system-ui,sans-serif;color:#3a2b2d;background:#fffdfb;border:1.5px solid #e6d3cc;border-radius:12px;padding:9px 11px;margin:6px 0;resize:none;overflow:hidden;-webkit-appearance:none}
+.zta:focus{outline:none;border-color:#c27b84;box-shadow:0 0 0 3px rgba(194,123,132,.18);background:#fff}
+.zta::placeholder{color:#b9a5a2}
+.zta.zcell{min-width:118px;margin:0;padding:6px 8px;border-radius:8px;font-size:16px}
+.zta.zline{margin:2px 0}
+td.zc{padding:3px}
+.fund.zon{display:grid;align-items:center}
+.ztick{width:38px;height:34px;border-radius:9px;border:1.5px solid #e0cfc9;background:#fff;font:800 18px -apple-system,sans-serif;color:#a95f6a;cursor:pointer}
+.ztick.on{background:#fbecee;border-color:#c27b84}
+.mcq .zopt{cursor:pointer;border-radius:10px;padding:4px 6px}
+.mcq .zopt.zx{background:#fbecee;outline:1.5px solid #c27b84}
+.mcq .zopt.zx .check::after{content:'✕';display:block;text-align:center;line-height:1;font-weight:800;color:#a95f6a}
+.zchips{display:flex;flex-wrap:nowrap;gap:6px;margin:4px 0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.zchips button{flex:0 0 auto}
+.zchips button{font:700 14px -apple-system,sans-serif;color:#7d6237;background:#f6ecdc;border:1px solid #e8d4b0;border-radius:10px;padding:7px 10px;min-width:40px}
+.zcmpwrap{margin:6px 0 14px}
+.zcmp{font:700 14px -apple-system,sans-serif;color:#a95f6a;background:#fff;border:1.5px solid #e6c6c9;border-radius:12px;padding:9px 14px;cursor:pointer}
+.zsol{margin-top:8px;padding:10px 12px;border-radius:14px;background:#f3faf5;border:1px solid #cfe5d7}
+.zsol .lh{margin:0 0 4px;font-size:15px}
+.zsol .lb{background:transparent;border:none;padding:0;margin:0}
+.zsol .zhint{font:13px -apple-system,sans-serif;color:#6b7d70;margin:8px 0 0}
+.zskip{margin:4px 0;padding:6px 10px;border-radius:10px;background:#f1ece9;color:#7a6a68;font:600 13px -apple-system,sans-serif}
+.zwrite{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.zwrite span{flex:1 1 220px}
+.zclear{font:600 13px -apple-system,sans-serif;background:#fff;border:1px solid #e0cfc9;border-radius:10px;padding:7px 10px;color:#8a7578}
+.zmine{margin:4px 0 6px;padding:8px 12px;border-radius:12px;background:#fff7ec;border:1px solid #ecd2a6;font:14px -apple-system,sans-serif}
+.zmine b{display:block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#b38a4b;margin-bottom:2px}
+.zmine p{margin:2px 0;white-space:pre-wrap}
+@media (prefers-color-scheme: dark){
+  .zta{background:#241d1d;color:#f4e9e5;border-color:#4a3a3a}
+  .zta:focus{background:#2a2222}
+  .ztick,.zcmp,.zclear{background:#29201f;color:#f4e9e5;border-color:#4a3a3a}
+  .zsol{background:#1f2a23;border-color:#3a5a45}
+  .zmine{background:#3a2f22;border-color:#6a5530}
+  .zchips button{background:#3a2f22;color:#f2dfb8;border-color:#6a5530}
+}
+@media print{.zcmpwrap,.zchips,.zclear,.zwrite{display:none}.zta{border:none;border-bottom:1px solid #ccc;border-radius:0}}
