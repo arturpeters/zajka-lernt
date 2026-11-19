@@ -18,7 +18,7 @@
       subjects: {},          // id -> { q:{}, sessions:[], sheetsDone:{}, exams:{} }
       days: {},              // 'YYYY-MM-DD' -> Anzahl beantworteter Fragen
       xp: 0,
-      settings: { subject: 'lf1', dailyGoal: 20, klausuren: [], installHintHidden: false },
+      settings: { subject: 'lf1', dailyGoal: 20, klausuren: [], installHintHidden: false, typeAnswers: true, guideSeen: false },
       examRun: null,         // laufende Probeklausur { subject, exam, start }
       updatedAt: 0,
     };

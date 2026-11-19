@@ -13,7 +13,7 @@
  *
  * Lokal (localhost/file) baut sich der Service Worker ab.
  */
-const CACHE_NAME = 'zajka-lernt-v1';
+const CACHE_NAME = 'zajka-lernt-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -21,6 +21,15 @@ const APP_SHELL = [
   './css/style.css',
   './css/sheet.css',
   './js/storage.js',
+  './js/check.js',
+  './assets/anleitung/1-installieren.jpg',
+  './assets/anleitung/2-termin.jpg',
+  './assets/anleitung/3-start.jpg',
+  './assets/anleitung/4-ueben.jpg',
+  './assets/anleitung/5-tippen.jpg',
+  './assets/anleitung/6-lernkarten.jpg',
+  './assets/anleitung/7-lernen.jpg',
+  './assets/anleitung/8-klausur.jpg',
   './js/subjects/lf1.js',
   './js/app.js',
   './js/sheet.js',

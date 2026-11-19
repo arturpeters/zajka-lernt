@@ -14,6 +14,8 @@ Lern-App für die Klausurvorbereitung (Kauffrau für Versicherungen und Finanzan
 
 - **Start:** Countdown bis zur Klausur, Tagesziel, Plan bis zum Klausurtag
 - **Üben:** Schnelltraining, Fehler wiederholen, Paragraphen-Jagd, Rechentraining (immer neue Zahlen), Lernkarten, Training nach Thema
+- **Antworten tippen:** Fundstellen und Rechenergebnisse werden eingetippt und geprüft (Paragraph, Absatz und Gesetz müssen stimmen; Satz/Nr. werden geprüft, wenn angegeben). In den Einstellungen abschaltbar.
+- **Anleitung:** ⚙︎ → „Anleitung ansehen“ (8 Schritte mit Bildern)
 - **Lernen:** Lernzettel je Thema, Übungsblätter mit Lösungen (zum Abhaken)
 - **Klausuren:** Probetest und zwei Probeklausuren mit Timer, Punkte selbst eintragen, Notenschätzung nach IHK-Schlüssel
 

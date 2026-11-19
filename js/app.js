@@ -129,6 +129,9 @@
     if (isIOS() && !isStandalone() && !st.settings.installHintHidden) {
       h += '<div class="install"><b>Als App auf den Home-Bildschirm</b>In Safari unten auf <b>Teilen</b> (□↑) tippen → <b>„Zum Home-Bildschirm“</b>. Dann startet die App wie eine richtige App und funktioniert auch offline.<div class="row"><button class="btn small ghost" data-act="hideinstall">Verstanden</button></div></div>';
     }
+    if (!st.settings.guideSeen) {
+      h += '<div class="install guidecard"><a href="#anleitung" class="grow"><b>Neu hier? So funktioniert die App →</b>8 kurze Schritte mit Bildern.</a><button class="iconbtn small" data-act="hideguide" aria-label="Ausblenden">✕</button></div>';
+    }
     // Countdown
     if (ex) {
       const left = dayDiff(Z.today(), ex.date);
@@ -279,6 +282,7 @@
     const t = sub().topics.find((x) => x.id === q.t);
     let c = '<span class="chip">' + esc(t ? t.short : '') + '</span>';
     if (q.type === 'para') c += '<span class="chip para">§ Fundstelle</span>';
+    if (typeMode(q)) c += '<span class="chip">⌨︎ Tippen</span>';
     if (q.gen) c += '<span class="chip">⏱ ' + esc(q.gen) + '</span>';
     if (q.type === 'tf') c += '<span class="chip">Richtig / Falsch</span>';
     if (q.type === 'match') c += '<span class="chip">Zuordnen</span>';
@@ -291,11 +295,15 @@
     let h = top(sess.title) + '<div class="screen"><div class="qhead"><div class="prog"><i id="pbar" data-w="' + (i / n * 100) + '"></i></div><span class="cnt">' + (i + 1) + ' / ' + n + '</span></div>';
     h += '<div class="card qcard"><div class="meta">' + qMeta(q) + '</div><h3>' + esc(q.q) + '</h3>';
     if (q.type === 'match') h += '<p class="sub">Tippe links, dann das passende Feld rechts.</p>';
+    if (typeMode(q) === 'cite') h += '<p class="sub">Tippe die Fundstelle: Paragraph, Absatz und Gesetz (Satz/Nr. wenn du sie weißt).</p>';
+    else if (typeMode(q) === 'value') h += '<p class="sub">Rechne und tippe das Ergebnis ein.</p>';
     if (q.type === 'order') h += '<p class="sub">Tippe die Begriffe in der richtigen Reihenfolge an.</p>';
     h += '</div><div id="ans"></div><div id="fb"></div><div class="spacer"></div><div id="next" class="sticky"></div></div>';
     app.innerHTML = h; applyBars();
     const A = document.getElementById('ans');
-    if (q.type === 'mc' || q.type === 'para') {
+    const tm = typeMode(q);
+    if (tm) renderTyping(tm);
+    else if (q.type === 'mc' || q.type === 'para') {
       const order = shuffle(q.o.map((_, k) => k));
       A.innerHTML = '<div class="opts">' + order.map((k, j) => '<button class="opt" data-act="pick" data-k="' + k + '"><span class="k">' + 'ABCD'[j] + '</span><span>' + esc(q.o[k]) + '</span></button>').join('') + '</div>';
     } else if (q.type === 'tf') {
@@ -305,15 +313,53 @@
       A.innerHTML = '<div class="match"><div class="col">' + q.pairs.map((p, k) => '<button class="mi" data-act="ml" data-k="' + k + '">' + esc(p[0]) + '</button>').join('') + '</div><div class="col">' + sess.m.right.map((k) => '<button class="mi" data-act="mr" data-k="' + k + '">' + esc(q.pairs[k][1]) + '</button>').join('') + '</div></div>';
     } else if (q.type === 'order') { sess.o = { placed: [], pool: shuffle(q.items.map((_, k) => k)) }; renderOrder(); }
   }
+  /* ---------- Antworten tippen ---------- */
+  const CHIPS = ['§', 'Abs.', 'Satz', 'Nr.', 'BBiG', 'JArbSchG', 'BGB', 'KSchG'];
+  function typeMode(q) {
+    if (st.settings.typeAnswers === false || !window.ZCheck) return null;
+    if (q.inp) return 'value';
+    if (q.type === 'para' && String(q.o[q.a]).trim().indexOf('§') === 0) return 'cite';
+    return null;
+  }
+  function renderTyping(mode) {
+    const q = sess.q, A = document.getElementById('ans');
+    const ph = mode === 'cite' ? 'z. B. § 20 Satz 2 BBiG' : q.inp.kind === 'date' ? 'TT.MM.JJJJ' : q.inp.kind === 'hm' ? 'Std:Min, z. B. 3:45' : 'Zahl' + (q.inp.unit ? ' (' + q.inp.unit + ')' : '');
+    const im = mode === 'cite' ? 'text' : 'decimal';
+    A.innerHTML = '<div class="typebox"><input id="tin" class="tin" type="text" inputmode="' + im + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="' + esc(ph) + '" aria-label="Deine Antwort">' +
+      (mode === 'cite' ? '<div class="chips">' + CHIPS.map((c) => '<button type="button" class="chipbtn" data-chip="' + esc(c) + '">' + esc(c) + '</button>').join('') + '</div>' : '') +
+      '<p id="thint" class="thint"></p><div class="row2"><button class="btn ghost" data-act="tskip">Weiß ich nicht</button><button class="btn" data-act="tcheck">Prüfen</button></div></div>';
+    const inp = document.getElementById('tin');
+    A.querySelectorAll('[data-chip]').forEach((b) => b.addEventListener('pointerdown', (e) => {
+      e.preventDefault(); if (inp.disabled) return;
+      const c = b.dataset.chip, v = inp.value, a = inp.selectionStart == null ? v.length : inp.selectionStart, z = inp.selectionEnd == null ? v.length : inp.selectionEnd;
+      const pre = a > 0 && !/\s$/.test(v.slice(0, a)) ? ' ' : '';
+      inp.setRangeText(pre + c + ' ', a, z, 'end'); inp.focus();
+    }));
+    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); checkTyped(false); } });
+    setTimeout(() => { try { inp.focus({ preventScroll: true }); } catch (e) { /* egal */ } }, 350);
+  }
+  function checkTyped(skip) {
+    if (sess.answered) return;
+    const q = sess.q, mode = typeMode(q), inp = document.getElementById('tin'), val = inp.value.trim();
+    const sol = q.o[q.a];
+    const done = () => { inp.disabled = true; document.getElementById('thint').textContent = ''; document.querySelectorAll('.typebox .row2, .typebox .chips').forEach((x) => x.remove()); };
+    if (skip) { done(); answer(false, sol, 'Kein Problem – schau dir die Lösung an.'); return; }
+    if (!val) { document.getElementById('thint').textContent = 'Bitte erst etwas eintippen.'; return; }
+    const r = mode === 'cite' ? ZCheck.checkCite(val, ZCheck.citeText(sol)) : ZCheck.checkValue(val, q.inp);
+    if (r.invalid) { document.getElementById('thint').textContent = r.msg; return; }
+    done(); inp.classList.add(r.ok ? 'good' : 'bad');
+    const note = 'Deine Antwort: ' + val + (r.ok ? (r.finer ? ' · ' + r.finer : '') : (r.msg ? ' · ' + r.msg : ''));
+    answer(r.ok, sol, note);
+  }
   function renderOrder() {
     const q = sess.q, o = sess.o;
     document.getElementById('ans').innerHTML = '<div class="slots">' + q.items.map((_, k) => { const v = o.placed[k]; return '<div class="slot' + (v !== undefined ? ' filled' : '') + '"><span class="no">' + (k + 1) + '</span>' + (v !== undefined ? esc(q.items[v]) : '') + '</div>'; }).join('') + '</div><div class="pool">' + o.pool.filter((k) => !o.placed.includes(k)).map((k) => '<button class="mi" data-act="op" data-k="' + k + '">' + esc(q.items[k]) + '</button>').join('') + '</div>';
   }
-  function answer(ok, extra) {
+  function answer(ok, extra, note) {
     if (sess.answered) return; sess.answered = true;
     const q = sess.q; mark(q.id, ok); sess.results.push({ q, ok });
     const ref = q.p ? '<span class="ref">' + esc(q.p) + '</span>' : '';
-    const sol = !ok && extra ? '<p><b>Lösung:</b> ' + esc(extra) + '</p>' : '';
+    const sol = (note ? '<p class="mine">' + esc(note) + '</p>' : '') + ((!ok || note) && extra ? '<p><b>Lösung:</b> ' + esc(extra) + '</p>' : '');
     document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><h4>' + (ok ? pick(['Richtig!', 'Genau so!', 'Sitzt!', 'Stark, Zajka!']) : pick(['Nicht ganz.', 'Knapp daneben.', 'Das merken wir uns.'])) + '</h4>' + sol + '<p>' + esc(q.e || '') + '</p>' + ref + '</div>';
     document.getElementById('next').innerHTML = '<button class="btn" data-act="next">' + (sess.i + 1 < sess.ids.length ? 'Weiter →' : 'Auswertung ansehen') + '</button>';
     const pb = document.getElementById('pbar'); if (pb) pb.style.width = ((sess.i + 1) / sess.ids.length * 100) + '%';
@@ -347,6 +393,29 @@
     applyBars();
   }
 
+  /* ---------- Anleitung ---------- */
+  const GUIDE = [
+    ['1-installieren', 'App aufs iPhone holen', 'In Safari auf Teilen (□↑) → „Zum Home-Bildschirm“. Dann läuft sie wie eine echte App, auch offline.'],
+    ['2-termin', 'Klausurtermin eintragen', 'Oben rechts ⚙︎ → Datum wählen → speichern. Die App zählt runter und plant die Tage bis dahin.'],
+    ['3-start', 'Jeden Tag: Start', 'Der Ring zeigt dein Tagesziel. Darunter steht, was heute dran ist – einfach antippen.'],
+    ['4-ueben', 'Üben', 'Schnelltraining, Fehler wiederholen, Paragraphen-Jagd, Rechentraining, Lernkarten oder ein Thema.'],
+    ['5-tippen', 'Antworten tippen', 'Fundstellen und Rechenaufgaben tippst du selbst. Die Knöpfe helfen bei § und Abs. Dann „Prüfen“.'],
+    ['6-lernkarten', 'Lernkarten: selbst prüfen', 'Karte antippen zum Umdrehen. Ehrlich sein: „Wusste ich“ oder „Nochmal üben“.'],
+    ['7-lernen', 'Lernzettel und Blätter', 'Unter „Lernen“: Lernzettel zu jedem Thema und die Übungsblätter mit Lösungen.'],
+    ['8-klausur', 'Probeklausur mit Timer', 'Starten, auf Papier schreiben, „Abgeben“. Dann mit der Lösung vergleichen und Punkte eintragen.']
+  ];
+  function renderGuide() {
+    view = 'guide'; setFocus(false); setTab('');
+    if (!st.settings.guideSeen) { st.settings.guideSeen = true; Z.save(); }
+    let h = top('So geht’s') + '<div class="screen"><p class="note">Alles bleibt nur auf deinem iPhone. Sichern kannst du unter ⚙︎ → „Code kopieren“.</p><div class="guide">';
+    GUIDE.forEach((g, i) => {
+      h += '<div class="card gstep"><div class="ghead"><span class="n">' + (i + 1) + '</span><div><b>' + esc(g[1]) + '</b><p>' + esc(g[2]) + '</p></div></div>' +
+        '<div class="shot"><img src="assets/anleitung/' + g[0] + '.jpg" alt="' + esc(g[1]) + '" loading="lazy" decoding="async" width="450" height="975"></div></div>';
+    });
+    h += '</div><button class="btn" data-act="home">Los geht’s</button></div>';
+    app.innerHTML = h; window.scrollTo(0, 0);
+  }
+
   /* ---------- Einstellungen ---------- */
   function renderSettings() {
     view = 'settings'; setFocus(false); setTab('');
@@ -355,9 +424,12 @@
     h += '<div class="card"><h2>Klausurtermine</h2><p class="note">Die App zählt die Tage runter und verteilt Blätter und Probeklausuren auf die Tage davor.</p>' + klausurList() +
       '<div class="field"><label for="ktitle">Bezeichnung</label><input id="ktitle" type="text" value="' + esc(s.short) + '-Klausur" autocomplete="off"></div>' +
       '<div class="field"><label for="kdate">Datum</label><input id="kdate" type="date" min="' + Z.today() + '"></div><button class="btn small" data-act="addk">Termin speichern</button></div>';
+    const ty = st.settings.typeAnswers !== false;
+    h += '<div class="card"><h2>Antworten tippen</h2><p class="note">Bei Fundstellen und Rechenaufgaben tippst du die Antwort selbst ein, die App prüft sie. Aus = Antwort auswählen.</p><div class="seg two"><button data-act="typeon" data-v="1" class="' + (ty ? 'on' : '') + '">An</button><button data-act="typeon" data-v="0" class="' + (ty ? '' : 'on') + '">Aus</button></div></div>';
     h += '<div class="card"><h2>Tagesziel</h2><p class="note">Fragen pro Tag</p><div class="seg">' + [10, 20, 30, 50].map((v) => '<button data-act="goal" data-v="' + v + '" class="' + (v === g ? 'on' : '') + '">' + v + '</button>').join('') + '</div></div>';
     h += '<div class="card"><h2>Sicherung</h2><p class="note">Alles bleibt nur auf diesem iPhone. Mit dem Code kannst du den Stand sichern (z. B. in Notizen) oder auf ein anderes Gerät bringen. Auch der Code aus dem alten LF1-Trainer funktioniert.</p>' +
       '<div class="row2"><button class="btn small ghost" data-act="copy">Code kopieren</button><button class="btn small ghost" data-act="import">Code einlesen</button></div><textarea id="imp" placeholder="Sicherungscode hier einfügen …" aria-label="Sicherungscode"></textarea></div>';
+    h += '<a class="btn ghost" href="#anleitung">Anleitung ansehen</a>';
     h += '<div class="card"><h2>Als App installieren</h2><p class="note">Safari → Teilen (□↑) → „Zum Home-Bildschirm“. Danach funktioniert die App auch offline. Updates erscheinen oben als Hinweis.</p></div>';
     h += '<button class="btn ghost danger" data-act="reset">Fortschritt zurücksetzen</button><p class="note">Zajka lernt · Version 1 · ohne Konto, ohne Tracking</p></div>';
     app.innerHTML = h; window.scrollTo(0, 0);
@@ -388,6 +460,7 @@
     else if (h === 'lernen') renderLernen();
     else if (h === 'klausuren') renderKlausuren();
     else if (h === 'einstellungen') renderSettings();
+    else if (h === 'anleitung') renderGuide();
     else if (h.indexOf('zettel-') === 0) renderZettel(h.slice(7));
     else renderStart();
     window.scrollTo(0, 0);
@@ -402,14 +475,18 @@
     const a = b.dataset.act;
     if (b.tagName === 'A') e.preventDefault();
     if (a === 'settings') go('#einstellungen');
-    else if (a === 'back') { if (view === 'zettel') go('#lernen'); else if (view === 'settings') history.length > 1 ? history.back() : go('#start'); else if (sess && (view === 'quiz' || view === 'result')) go('#ueben'); else go('#ueben'); }
+    else if (a === 'back') { if (view === 'zettel') go('#lernen'); else if (view === 'guide') go('#start'); else if (view === 'settings') history.length > 1 ? history.back() : go('#start'); else if (sess && (view === 'quiz' || view === 'result')) go('#ueben'); else go('#ueben'); }
     else if (a === 'home') go('#start');
+    else if (a === 'hideguide') { st.settings.guideSeen = true; Z.save(); renderStart(); }
     else if (a === 'hideinstall') { st.settings.installHintHidden = true; Z.save(); renderStart(); }
     else if (a === 'quick' || a === 'weak' || a === 'para' || a === 'calc') startSession(a);
     else if (a === 'topic') startSession('topic', b.dataset.t);
     else if (a === 'cards') startCards();
     else if (a === 'again') startSession(sess.mode, sess.topic);
     else if (a === 'next') { sess.i++; nextQuestion(); }
+    else if (a === 'tcheck') checkTyped(false);
+    else if (a === 'tskip') checkTyped(true);
+    else if (a === 'typeon') { st.settings.typeAnswers = b.dataset.v === '1'; Z.save(); renderSettings(); toast(st.settings.typeAnswers ? 'Antworten tippen: an' : 'Antworten tippen: aus'); }
     else if (a === 'pick') {
       if (sess.answered) return; const k = +b.dataset.k, q = sess.q;
       document.querySelectorAll('.opt').forEach((o) => { o.disabled = true; const kk = +o.dataset.k; if (kk === q.a) o.classList.add('correct'); else o.classList.add(o === b ? 'wrong' : 'dim'); });
@@ -461,6 +538,9 @@
 
   // Daten möglichst dauerhaft halten (iOS: Home-Bildschirm-Apps sind ohnehin geschützt).
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+
+  // Nur für lokale Tests: aktuelle Frage auslesen.
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__zajkaQ = () => sess && sess.q;
 
   route();
 })();
