@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<!-- Sicherheit wie bei Zeitstempel: nur eigene Dateien, keine fremden Server,
+     kein Tracking. Alle Daten bleiben auf dem iPhone. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; manifest-src 'self'; connect-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Zajka lernt</title>
+<meta name="description" content="Klausurvorbereitung: Quiz, Lernkarten, Lernzettel, Probeklausuren und Lernplan." />
+<meta name="theme-color" content="#F8F2EC" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1C1617" media="(prefers-color-scheme: dark)" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Zajka lernt" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="format-detection" content="telephone=no" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="assets/icons/icon-192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <button type="button" id="updateBanner" class="update is-hidden">Neue Version da – tippen zum Aktualisieren</button>
+  <main id="app" class="app"></main>
+  <nav id="tabs" class="tabs" aria-label="Bereiche">
+    <a href="#start" data-tab="start"><span class="ti">⌂</span><span>Start</span></a>
+    <a href="#ueben" data-tab="ueben"><span class="ti">✦</span><span>Üben</span></a>
+    <a href="#lernen" data-tab="lernen"><span class="ti">❖</span><span>Lernen</span></a>
+    <a href="#klausuren" data-tab="klausuren"><span class="ti">⏱</span><span>Klausuren</span></a>
+  </nav>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <script src="js/storage.js"></script>
+  <script src="js/subjects/lf1.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
