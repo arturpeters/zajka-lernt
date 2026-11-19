@@ -296,4 +296,9 @@ body.focus .tabs{display:none}
 .blitzcard.good{background:var(--good-soft);animation:pop .3s ease} .blitzcard.bad{background:var(--bad-soft);animation:shake .3s ease}
 .tf.big2 .opt{padding:24px;font-size:18px}
 .flip.kino{height:340px}
+/* Was ist neu */
+.newcard{border:1.5px solid var(--gold);background:linear-gradient(160deg,var(--gold-soft),var(--surface) 60%);display:flex;flex-direction:column;gap:8px;animation:pop .5s ease}
+.newcard .chip{align-self:flex-start}
+.newcard ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:14px}
+.newcard .btn{align-self:flex-start;width:auto;padding:11px 22px}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

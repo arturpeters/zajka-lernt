@@ -180,6 +180,26 @@
       return '<button class="tbar" data-act="topic" data-t="' + t.id + '"><span class="tname">' + esc(t.short) + '</span><span class="bar"><i data-w="' + p + '"></i></span><span class="tp">' + p + '%</span><span class="medal ' + (m || 'none') + '" title="' + (m ? MEDAL[m] : 'noch keine Medaille') + '">●</span></button>'; }).join('') + '</div>';
   }
 
+  /* ---------- Was ist neu (einmal nach jedem Update) ---------- */
+  const APP_VERSION = '3';
+  const WHATSNEW = [
+    ['Fortschritt, der steigt', '73 Lernpunkte: richtig = sitzt, ein Fehler kostet nur eine halbe Stufe. 100 % sind mit rund 75 richtigen Antworten drin.'],
+    ['Selbst prüfen', 'Bei Fundstellen und Rechenaufgaben: aufschreiben, „Lösung zeigen“, dann Richtig, Halb oder Falsch tippen.'],
+    ['Viel mehr Fragen', '256 Fragen und 11 Fall-Generatoren mit immer neuen Namen und Zahlen – nur Stoff aus dem Unterricht.'],
+    ['Spiele', 'Memory, Blitzrunde und Karten-Kino unter „Üben“.'],
+    ['Serien, Level, Abzeichen', 'Dazu Medaillen pro Thema: Bronze, Silber, Gold.']
+  ];
+  function whatsNewCard() {
+    return '<div class="card newcard"><span class="chip">Update installiert · Version ' + APP_VERSION + '</span><h2>Das ist neu</h2><ul>' +
+      WHATSNEW.map((w) => '<li><b>' + esc(w[0]) + ':</b> ' + esc(w[1]) + '</li>').join('') + '</ul><button class="btn small" data-act="seennew">Alles klar</button></div>';
+  }
+  function showWhatsNew() {
+    if (st.settings.seenVersion === APP_VERSION) return false;
+    const used = st.xp > 0 || Object.keys(st.days).length > 0;
+    if (!used) { st.settings.seenVersion = APP_VERSION; Z.save(); return false; }
+    return true;
+  }
+
   /* ---------- Start ---------- */
   function renderStart() {
     view = 'start'; setFocus(false); setTab('start'); checkBadges();
@@ -191,6 +211,7 @@
     if (isIOS() && !isStandalone() && !st.settings.installHintHidden) {
       h += '<div class="install"><b>Als App auf den Home-Bildschirm</b>In Safari unten auf <b>Teilen</b> (□↑) tippen → <b>„Zum Home-Bildschirm“</b>. Dann startet die App wie eine richtige App und funktioniert auch offline.<div class="row"><button class="btn small ghost" data-act="hideinstall">Verstanden</button></div></div>';
     }
+    if (showWhatsNew()) h += whatsNewCard();
     if (!st.settings.guideSeen) {
       h += '<div class="install guidecard"><a href="#anleitung" class="grow"><b>Neu hier? So funktioniert die App →</b>Kurze Schritte mit Bildern.</a><button class="iconbtn small" data-act="hideguide" aria-label="Ausblenden">✕</button></div>';
     }
@@ -665,6 +686,7 @@
     else if (a === 'back') { stopGames(); if (view === 'zettel') go('#lernen'); else if (view === 'guide' || view === 'settings') go('#start'); else go('#ueben'); }
     else if (a === 'home') go('#start');
     else if (a === 'tab-ueben') go('#ueben');
+    else if (a === 'seennew') { st.settings.seenVersion = APP_VERSION; Z.save(); renderStart(); }
     else if (a === 'hideguide') { st.settings.guideSeen = true; Z.save(); renderStart(); }
     else if (a === 'hideinstall') { st.settings.installHintHidden = true; Z.save(); renderStart(); }
     else if (a === 'quick' || a === 'weak' || a === 'para' || a === 'calc') startSession(a);
