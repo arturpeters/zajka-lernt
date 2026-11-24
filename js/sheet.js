@@ -62,7 +62,7 @@
     if (r) {
       const box = el('div', 'ztimer');
       const tm = el('span', 'tm', '');
-      const lbl = el('span', 'lbl', 'Restzeit · auf Papier schreiben, Gesetzessammlung erlaubt');
+      const lbl = el('span', 'lbl', 'Restzeit · in die Felder schreiben, Gesetzessammlung erlaubt');
       const btn = el('button', null, 'Abgeben');
       btn.type = 'button';
       box.append(tm, lbl, btn);
@@ -252,7 +252,7 @@
       if (SKIP[i]) { const n = el('div', 'zskip', SKIP[i] === 1 ? 'Kommt laut Themenliste nicht dran – auslassen.' : SKIP[i]); t.querySelector('.t').after(n); }
       if (examRunning) return;
       const fs = fields[i]; let anchor = t;
-      if (fs.length) { const last = fs[fs.length - 1].el; anchor = last.closest('table') || last.closest('.fund') || last.closest('.mcq') || last; }
+      if (fs.length) { let last = fs[0].el; fs.forEach((f) => { if (last.compareDocumentPosition(f.el) & Node.DOCUMENT_POSITION_FOLLOWING) last = f.el; }); anchor = last.closest('table') || last.closest('.fund') || last.closest('.mcq') || last; }
       if (!t.contains(anchor) && taskOf(anchor) !== i) anchor = t;
       const wrap = el('div', 'zcmpwrap');
       const btn = el('button', 'zcmp', 'Lösung vergleichen'); btn.type = 'button';

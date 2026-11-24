@@ -221,7 +221,9 @@ const SHEETS = [
 const EXAMS = [
  {id:"probetest", title:"Probetest", level:"leicht", minutes:20, parts:[6,6,5,6,2]},
  {id:"klausur-a", title:"Probeklausur A", level:"mittel", minutes:60, parts:[5,8,8,8,6,6,9]},
- {id:"klausur-b", title:"Probeklausur B", level:"schwer", minutes:60, parts:[9,8,10,22,7,4], skip:{4:1}, note:"Aufgabe 5 (Arbeitsgericht) kommt laut Themenliste nicht dran – lass sie aus."}
+ {id:"klausur-b", title:"Probeklausur B", level:"schwer", minutes:60, parts:[9,8,10,22,7,4], skip:{4:1}, note:"Aufgabe 5 (Arbeitsgericht) kommt laut Themenliste nicht dran – lass sie aus."},
+ {id:"klausur-c", title:"Probeklausur C · wie bei Frau Süß", level:"mittel", minutes:45, parts:[3,6,15,2,6], note:"Gleicher Aufbau wie ihre alte Klausur: Unterschriften, Arbeitszeit, JArbSchG-Fälle mit Paragraph, Vertragspartner, Ankreuzen."},
+ {id:"klausur-d", title:"Probeklausur D · BGB & Rechnen", level:"schwer", minutes:60, parts:[4,10,5,6,8,10,7], note:"Mehr BGB (§§ 611a, 615, 622, 623, 626) und Rechenaufgaben: Kündigungstermine, KSchG, Abfindung, Berufsschulzeit."}
 ];
 /* Klausurthemen laut Liste der Lehrerin (Foto vom 28.10.) → Lernpunkte */
 const THEMEN = [

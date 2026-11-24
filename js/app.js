@@ -181,8 +181,9 @@
   }
 
   /* ---------- Was ist neu (einmal nach jedem Update) ---------- */
-  const APP_VERSION = '3.1';
+  const APP_VERSION = '3.2';
   const WHATSNEW = [
+    ['Zwei neue Probeklausuren', 'C ist aufgebaut wie die alte Klausur von Frau Süß, D hat mehr BGB und Rechenaufgaben. Zu finden unter „Klausuren“.'],
     ['Schreibfelder', 'In allen Übungsblättern und Probeklausuren direkt mit der Handytastatur schreiben – kein Papier nötig. Alles bleibt gespeichert.'],
     ['Lösung vergleichen', 'Unter jeder Aufgabe: Knopf antippen, die Lösung erscheint direkt unter deiner Antwort.'],
     ['Paragraphen antippen', 'Fundstellen-Fragen haben wieder vier Paragraphen zur Auswahl. In den Blättern gibt es Bausteine wie §, Abs., BBiG zum Antippen.'],
